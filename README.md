@@ -13,7 +13,7 @@ Usage
 The OniExtractor class can be used to write frames extracted from a given .oni file to `std::vector<cv::Mat>`.
 
         OniExtractor oe(filename);
-        ok = oe.init();
+        bool ok = oe.init();
 
 
 You can extract the RGB images (`CV_8UC3`), depth images (`CV_16U`),

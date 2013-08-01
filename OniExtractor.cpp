@@ -86,6 +86,7 @@ bool OniExtractor::extract()
 	    std::cout << " (within +/-" << timeMargin << "ms)" << std::endl;
 	}
 
+	milliseconds biggestTimestamp = getBiggestTimestamp();
 	bool showWarning = true;
 	XnUInt64 timestamp;
 	for (unsigned long int i = 0; i < numFrames; ++i)
@@ -97,6 +98,7 @@ bool OniExtractor::extract()
 
         if (tsOfInterest.size() > 0)
         {
+        	// Use given timestamps to find frames.
         	if (showWarning)
         	{
         		if (absoluteTS && referenceTime == 0)
@@ -105,9 +107,9 @@ bool OniExtractor::extract()
         			std::cout << "WARNING! Seems like you've specified a reference time, but use relative timestamps!" << std::endl;
         		showWarning = false;
         	}
-        	// Use given timestamps to find frames.
 	        if (absoluteTS) timeOffset += referenceTime;
-	        if (timeOffset > tsOfInterest.back()) break;
+	        // If we are ahead of the biggest tsoi, we are done.
+	        if (timeOffset > biggestTimestamp) break;
 
 	       	for (auto ts : tsOfInterest)
 	        {
@@ -123,7 +125,7 @@ bool OniExtractor::extract()
 		}
 		else
 		{
-			// Else store every frame.
+			// If no tsoi were given, store each frame.
 			if (verbose) std::cout << "Frame " << i << "/" << numFrames << ", timestamp = " << timeOffset << std::endl;
 			storeCurrentRGBImage();
 	        storeCurrentRealWorldCoords();
@@ -180,14 +182,6 @@ void OniExtractor::ximage2opencv(const xn::ImageMetaData& xImageMap, cv::Mat& im
     tmp.copyTo(im);
 }
 
-// void OniExtractor::xdepth2opencv(const xn::DepthMetaData& xDepthMap, cv::Mat& im)
-// {
-//     int h = xDepthMap.YRes();
-//     int w = xDepthMap.XRes();
-//     const cv::Mat tmp(h, w, CV_16U, (void*)xDepthMap.Data());
-//     tmp.copyTo(im);
-// }
-
 void OniExtractor::xworld2opencv(const XnPoint3D* rw, const cv::Size& res, cv::Mat& im)
 {
 	const cv::Mat tmp(res.height, res.width, CV_32FC3, (void*)rw);
@@ -211,7 +205,6 @@ void OniExtractor::setTimestampsOfInterest(const std::vector<milliseconds>& _tso
 {
 	tsOfInterest = _tsoi;
 	timeMargin = _timeMargin;
-	sortTimestamps();
 	if (tsOfInterest.at(0) > 946684800000) // year 2000 in milliseconds
 		absoluteTS = true;
 }
@@ -229,6 +222,13 @@ void OniExtractor::setAbsoluteTimestampReference(const milliseconds& _referenceT
 	absoluteTS = true;
 	referenceTime = _referenceTime;
 	if (verbose) std::cout << "Reference time set. I'm expecting absolute timestamps now." << std::endl;
+}
+
+milliseconds OniExtractor::getBiggestTimestamp()
+{
+	std::vector<milliseconds> tsoi(tsOfInterest);
+	sortTimestamps(tsoi);
+	return tsoi.back();
 }
 
 //

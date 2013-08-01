@@ -83,7 +83,8 @@ class OniExtractor
 		void ximage2opencv(const xn::ImageMetaData& xImageMap, cv::Mat& im);
 		void xworld2opencv(const XnPoint3D* worldCoords, const cv::Size& resolution, cv::Mat& im);
 		inline milliseconds string2timestamp(const std::string& s) {return strtoul(s.c_str(),NULL,0);};
-		void sortTimestamps() {std::sort(tsOfInterest.begin(), tsOfInterest.end());};
+		void sortTimestamps(std::vector<milliseconds>& tsoi) {std::sort(tsoi.begin(), tsoi.end());};
+		milliseconds getBiggestTimestamp();
 };
 
 #endif

@@ -3,13 +3,6 @@
 #ifdef __STANDALONE_ONI_EXTRACTOR
 	#include <opencv2/highgui/highgui.hpp>
 #endif
-//
-//
-//
-// TODO
-// try to put imagegenerator.waitandupdatedata() inside the if (timestamp found)
-//
-//
 
 OniExtractor::OniExtractor(const std::string& _filename, const bool _verbose)
 : filename(_filename),

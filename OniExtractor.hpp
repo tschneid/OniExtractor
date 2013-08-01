@@ -43,9 +43,6 @@ class OniExtractor
 		// timestamps extracted from the .oni are all relative.
 		void setAbsoluteTimestampReference(const milliseconds& _referenceTime);
 
-		// Specify the .oni file.
-		void setFile(const std::string& fn) {filename = fn;};
-
 		// Specify whether the blue and red channels shall be switched for the extracted RGB images
 		// (e.g., for post-processing in OpenCV).
 		void convertRGB2BGR(const bool yn) {RGB2BGR = yn;};
